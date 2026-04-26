@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psy Protocol · Open Source Stack | Psy 协议 · 开源栈</title>
+
+<!-- SEO · GEO -->
+<meta name="description" content="Psy Protocol is a ZK-native privacy-preserving blockchain that scales to millions of users. Browse the open-source stack — Plonky2 acceleration, Dogecoin bridges, recursive proof tooling.">
+<meta name="keywords" content="Psy Protocol, ZK blockchain, Plonky2, Dogecoin bridge, zero knowledge proofs, recursive proofs, Poseidon, Goldilocks field, QED Protocol">
+<meta name="author" content="Gewenbo">
+<link rel="canonical" href="https://psy.psyverse.fun/">
+<link rel="alternate" hreflang="en" href="https://psy.psyverse.fun/">
+<link rel="alternate" hreflang="zh-CN" href="https://psy.psyverse.fun/">
+<link rel="alternate" hreflang="x-default" href="https://psy.psyverse.fun/">
+<meta property="og:title" content="Psy Protocol · Open Source Stack">
+<meta property="og:description" content="A ZK-native privacy-preserving blockchain that scales to millions of users. The open-source toolkit powering it — Plonky2 acceleration, Dogecoin bridges, browser proving, recursive verification.">
+<meta property="og:url" content="https://psy.psyverse.fun/">
+<meta property="og:site_name" content="Psyverse">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Psy Protocol · Open Source Stack">
+<meta name="twitter:description" content="ZK-native blockchain. Open-source Plonky2 toolkit. Dogecoin bridges. Browser proving.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#06b6d4">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Psy Protocol · Open Source Stack",
+  "description": "A ZK-native privacy-preserving blockchain that scales to millions of users.",
+  "url": "https://psy.psyverse.fun/",
+  "inLanguage": ["en", "zh-CN"],
+  "author": { "@type": "Person", "name": "Gewenbo", "url": "https://psyverse.fun/" },
+  "publisher": { "@type": "Organization", "name": "Psyverse", "url": "https://psyverse.fun/" }
+}
+</script>
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23050608'/><text x='50%25' y='54%25' font-size='20' text-anchor='middle' dominant-baseline='central' fill='%2306b6d4' font-weight='700'>Ψ</text></svg>">
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #050608;
+  --bg-2: #0a0c10;
+  --bg-3: #11141a;
+  --line: #1a1e26;
+  --line-2: #262b35;
+  --fg: #e7ecf2;
+  --fg-2: #aeb6c2;
+  --fg-3: #5d6473;
+  --cyan: #06b6d4;
+  --cyan-glow: #06b6d488;
+  --green: #84cc16;
+  --pink: #f472b6;
+  --gold: #facc15;
+  --rust: #ce422b;
+  --ts: #3178c6;
+  --shell: #4eaa25;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── Background grid & noise ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(6,182,212,.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6,182,212,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(circle at 20% 0%, rgba(6,182,212,.08), transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(132,204,22,.05), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Top nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(5,6,8,.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+nav .logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+nav .logo .glyph {
+  width: 28px; height: 28px;
+  border: 1px solid var(--cyan);
+  border-radius: 6px;
+  display: grid; place-items: center;
+  color: var(--cyan);
+  font-size: 16px;
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+nav .links {
+  display: flex; gap: 18px;
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+nav .links a {
+  color: var(--fg-2);
+  text-decoration: none;
+  transition: color .15s;
+}
+nav .links a:hover { color: var(--cyan); }
+nav .lang {
+  background: transparent;
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .15s;
+}
+nav .lang:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+/* ── Layout ── */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: 140px 0 80px;
+  position: relative;
+}
+.tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  border: 1px solid var(--line-2);
+  border-radius: 100px;
+  padding: 6px 14px;
+  margin-bottom: 28px;
+}
+.tag .dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--cyan);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.8); }
+}
+h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+  max-width: 18ch;
+}
+h1 .accent {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--green) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.lede {
+  font-size: clamp(16px, 1.6vw, 19px);
+  color: var(--fg-2);
+  line-height: 1.55;
+  max-width: 56ch;
+  margin-bottom: 36px;
+}
+.cta-row {
+  display: flex; gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 64px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1px solid var(--cyan);
+  color: var(--bg);
+  background: var(--cyan);
+  transition: all .15s;
+}
+.btn:hover {
+  background: transparent;
+  color: var(--cyan);
+  box-shadow: 0 0 24px var(--cyan-glow);
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--fg);
+  border-color: var(--line-2);
+}
+.btn.ghost:hover {
+  border-color: var(--fg);
+  background: var(--bg-2);
+  box-shadow: none;
+  color: var(--fg);
+}
+
+/* ── Stats strip ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 100px;
+}
+.stat {
+  background: var(--bg-2);
+  padding: 24px 20px;
+}
+.stat .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+.stat .label {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Architecture diagram ── */
+.arch {
+  margin: 80px 0 100px;
+  padding: 32px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.arch pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--fg-2);
+  line-height: 1.5;
+  white-space: pre;
+}
+.arch pre .layer { color: var(--cyan); font-weight: 600; }
+.arch pre .item { color: var(--fg); }
+.arch pre .priv { color: var(--fg-3); font-style: italic; }
+
+/* ── Section ── */
+section {
+  padding: 80px 0;
+  position: relative;
+  z-index: 1;
+}
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 36px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+.section-head .num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--cyan);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.section-head h2 {
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.section-head .subtitle {
+  color: var(--fg-2);
+  font-size: 15px;
+  max-width: 60ch;
+}
+.section-head .count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+/* ── Repo grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.repo {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.repo::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.repo:hover {
+  border-color: var(--line-2);
+  transform: translateY(-2px);
+  background: var(--bg-3);
+}
+.repo:hover::before { opacity: 1; }
+.repo-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px;
+}
+.repo-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--fg);
+}
+.repo-desc {
+  color: var(--fg-2);
+  font-size: 13.5px;
+  line-height: 1.55;
+  flex: 1;
+}
+.repo-meta {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-3);
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.lang-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.lang-rust { background: var(--rust); }
+.lang-ts   { background: var(--ts);   }
+.lang-js   { background: #f7df1e;     }
+.lang-shell{ background: var(--shell);}
+.lang-cpp  { background: #f34b7d;     }
+.lang-go   { background: #00add8;     }
+.lang-other{ background: var(--fg-3); }
+.stars {
+  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--line);
+  padding: 60px 0 80px;
+  margin-top: 80px;
+  position: relative;
+  z-index: 1;
+}
+.foot-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+.foot-col h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+.foot-col a {
+  display: block;
+  color: var(--fg-2);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 8px;
+  transition: color .15s;
+}
+.foot-col a:hover { color: var(--cyan); }
+.foot-bottom {
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--fg-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+.foot-bottom a { color: var(--cyan); text-decoration: none; }
+
+/* ── Disclaimer ── */
+.disclaimer {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: 8px;
+  padding: 18px 22px;
+  font-size: 13px;
+  color: var(--fg-2);
+  line-height: 1.6;
+  margin: 32px 0;
+}
+.disclaimer strong { color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px; }
+
+/* ── Bilingual ── */
+.zh { display: none; }
+body.zh-mode .en { display: none; }
+body.zh-mode .zh { display: revert; }
+body.zh-mode .grid .zh,
+body.zh-mode .stats .zh,
+body.zh-mode .foot-grid .zh,
+body.zh-mode .arch .zh { display: revert; }
+body.zh-mode { font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; }
+body.zh-mode .mono, body.zh-mode .repo-name, body.zh-mode .stat .num, body.zh-mode .stat .label,
+body.zh-mode nav .logo, body.zh-mode nav .links, body.zh-mode .tag, body.zh-mode .btn,
+body.zh-mode .arch pre, body.zh-mode .repo-meta, body.zh-mode .section-head .num,
+body.zh-mode .foot-col h4, body.zh-mode .foot-bottom { font-family: 'JetBrains Mono', 'Noto Sans SC', monospace; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  nav .links { display: none; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .foot-grid { grid-template-columns: 1fr; gap: 32px; }
+  .hero { padding: 100px 0 40px; }
+  .arch pre { font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span class="glyph">Ψ</span> <span class="en">PSY · OPEN STACK</span><span class="zh">PSY · 开源栈</span></div>
+  <div class="links">
+    <a href="#core"><span class="en">Core</span><span class="zh">核心</span></a>
+    <a href="#cross-chain"><span class="en">Cross-chain</span><span class="zh">跨链</span></a>
+    <a href="#zk"><span class="en">ZK Accel</span><span class="zh">ZK 加速</span></a>
+    <a href="#crypto"><span class="en">Crypto</span><span class="zh">密码学</span></a>
+    <a href="https://github.com/PsyProtocol" target="_blank">GitHub</a>
+  </div>
+  <button class="lang" onclick="document.body.classList.toggle('zh-mode')">EN / 中文</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="tag"><span class="dot"></span> <span class="en">Live · Open Source · MIT &amp; Apache-2.0</span><span class="zh">活跃开发中 · 开源 · MIT &amp; Apache-2.0</span></div>
+    <h1>
+      <span class="en">A privacy-preserving blockchain that scales to <span class="accent">millions of users</span>.</span>
+      <span class="zh">面向<span class="accent">数百万用户规模</span>的隐私保护区块链。</span>
+    </h1>
+    <p class="lede">
+      <span class="en">Psy is a ZK-native independent chain built on Plonky2 recursive proofs. Sharded execution, browser-side proving, and a complete open-source toolkit for building cross-chain ZK applications.</span>
+      <span class="zh">Psy 是一条基于 Plonky2 递归证明的 ZK 原生独立链。分片执行、浏览器端证明生成，以及一整套用于构建跨链 ZK 应用的开源工具集。</span>
+    </p>
+    <div class="cta-row">
+      <a class="btn" href="https://github.com/PsyProtocol" target="_blank">
+        <span class="en">Explore PsyProtocol →</span><span class="zh">查看 PsyProtocol →</span>
+      </a>
+      <a class="btn ghost" href="https://github.com/QEDProtocol" target="_blank">
+        <span class="en">Explore QEDProtocol →</span><span class="zh">查看 QEDProtocol →</span>
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num">50+</div>
+        <div class="label"><span class="en">Public repos</span><span class="zh">公开仓库</span></div>
+      </div>
+      <div class="stat">
+        <div class="num">128+</div>
+        <div class="label"><span class="en">Realm shards</span><span class="zh">分片域</span></div>
+      </div>
+      <div class="stat">
+        <div class="num">~6 MB</div>
+        <div class="label"><span class="en">Browser prover</span><span class="zh">浏览器证明器</span></div>
+      </div>
+      <div class="stat">
+        <div class="num">Plonky2</div>
+        <div class="label"><span class="en">Proof system</span><span class="zh">证明系统</span></div>
+      </div>
+    </div>
+
+    <!-- Architecture diagram -->
+    <div class="arch">
+<pre><span class="layer">┌─ USER LAYER ──────────────────────────────────────────────────┐</span>
+  <span class="item">psy-wallet</span> <span class="priv">(private)</span>     <span class="item">psy-web-ide</span> <span class="priv">(private)</span>
+<span class="layer">├─ SDK & TOOLING ──────────────────────────────────────────────┤</span>
+  <span class="item">psy-sdk</span>          <span class="item">psyup</span>          <span class="item">doge-sdk</span>
+<span class="layer">├─ LANGUAGE & COMPILER ────────────────────────────────────────┤</span>
+  <span class="item">psy-compiler</span>     <span class="item">psy-prover</span>     <span class="item">plonky2-toolbelt</span>
+<span class="layer">├─ PROTOCOL & CONSENSUS ───────────────────────────────────────┤</span>
+  <span class="item">psy-node</span>         <span class="item">city-rollup</span>    <span class="item">parth-generic</span> <span class="priv">(private)</span>
+<span class="layer">├─ ZK ACCELERATION ────────────────────────────────────────────┤</span>
+  <span class="item">plonky2-hwa</span>      <span class="item">plonky2-metal</span>  <span class="item">plonky2-wasm</span>     <span class="item">plonky2.5</span>
+<span class="layer">├─ CRYPTOGRAPHIC PRIMITIVES ───────────────────────────────────┤</span>
+  <span class="item">poseidon2</span>        <span class="item">poseidon-goldilocks</span>  <span class="item">noble-secp256k1</span>
+<span class="layer">├─ DOGECOIN INFRASTRUCTURE ────────────────────────────────────┤</span>
+  <span class="item">doge-on-solana</span>   <span class="item">doge-light-client</span>      <span class="item">electrs-doge</span>
+  <span class="item">psy-doge-solana-bridge</span>  <span class="item">txindex</span>     <span class="item">rust-dogecoin</span>
+<span class="layer">└──────────────────────────────────────────────────────────────┘</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 1 · CORE -->
+<section id="core">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="num">01 / CORE</div>
+        <h2><span class="en">Core Protocol</span><span class="zh">核心协议</span></h2>
+        <p class="subtitle"><span class="en">The chain itself, the prover, the language compiler, and the SDK that ties it all together.</span><span class="zh">链本体、证明生成器、语言编译器，以及将三者串起来的 SDK。</span></p>
+      </div>
+      <div class="count">5 repos</div>
+    </div>
+    <div class="grid">
+
+      <a class="repo" href="https://github.com/PsyProtocol/psy-node" target="_blank">
+        <div class="repo-head"><span class="repo-name">psy-node</span><span class="stars">★ 2</span></div>
+        <p class="repo-desc"><span class="en">The Psy node implementation. A privacy-preserving blockchain that scales to millions of users via sharded realms and recursive ZK proofs.</span><span class="zh">Psy 节点实现。通过分片域与递归 ZK 证明实现面向数百万用户规模的隐私保护区块链。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/psy-prover" target="_blank">
+        <div class="repo-head"><span class="repo-name">psy-prover</span><span class="stars">★ 3</span></div>
+        <p class="repo-desc"><span class="en">Psy ZkVM and circuit library plus local proof generation — including a WASM build for in-browser proving.</span><span class="zh">Psy ZkVM 与电路库，含本地证明生成，并提供 WASM 版本支持浏览器端证明。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust · WASM</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/psy-compiler" target="_blank">
+        <div class="repo-head"><span class="repo-name">psy-compiler</span><span class="stars">★ 3</span></div>
+        <p class="repo-desc"><span class="en">The Psy language compiler. A complete pipeline from lexer through to ZK circuit generation, with LSP and a `dargo` CLI for the full dev loop.</span><span class="zh">Psy 语言编译器。从词法分析到 ZK 电路生成的完整流水线，配套 LSP 与 `dargo` 命令行工具，支持完整开发循环。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/psy-sdk" target="_blank">
+        <div class="repo-head"><span class="repo-name">psy-sdk</span><span class="stars">★ 2</span></div>
+        <p class="repo-desc"><span class="en">TypeScript SDK for Psy. Wallet management, transaction signing, RPC providers for coordinator and realm edges, and a browser-compatible local prover.</span><span class="zh">Psy 的 TypeScript SDK。钱包管理、交易签名、协调器与分片边缘 RPC 客户端，附带浏览器兼容的本地证明器。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-ts"></span>TypeScript</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/psyup" target="_blank">
+        <div class="repo-head"><span class="repo-name">psyup</span><span class="stars">★ 1</span></div>
+        <p class="repo-desc"><span class="en">One-line installer for the Psy toolchain. Inspired by `rustup` — keeps psy-compiler, dargo, and the rest of the local dev stack in sync.</span><span class="zh">Psy 工具链的一键安装器。借鉴 `rustup` 设计，保持 psy-compiler、dargo 及本地开发栈其它工具的版本同步。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-shell"></span>Shell</span><span>QEDProtocol</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · CROSS-CHAIN -->
+<section id="cross-chain">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="num">02 / CROSS-CHAIN</div>
+        <h2><span class="en">Dogecoin × Cross-chain</span><span class="zh">Dogecoin × 跨链</span></h2>
+        <p class="subtitle"><span class="en">Trustless bridges, light clients, and indexers that anchor Psy to Dogecoin and Solana via zero-knowledge proofs of consensus.</span><span class="zh">通过共识层零知识证明，将 Psy 与 Dogecoin、Solana 锚定的去信任桥接、轻客户端与索引器。</span></p>
+      </div>
+      <div class="count">7 repos</div>
+    </div>
+    <div class="grid">
+
+      <a class="repo" href="https://github.com/PsyProtocol/psy-doge-solana-bridge" target="_blank">
+        <div class="repo-head"><span class="repo-name">psy-doge-solana-bridge</span><span class="stars">★ 5</span></div>
+        <p class="repo-desc"><span class="en">🐶 A trust-minimized Dogecoin to Solana bridge powered by zero knowledge proofs. No custodial relayers — proof of consensus is verified on-chain.</span><span class="zh">🐶 由零知识证明驱动的去信任 Dogecoin → Solana 桥。无托管中继商——共识证明在链上验证。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/doge-on-solana" target="_blank">
+        <div class="repo-head"><span class="repo-name">doge-on-solana</span><span class="stars">★ 9</span></div>
+        <p class="repo-desc"><span class="en">Such IBC, very trustless. Full verification of Dogecoin consensus on Solana — the building block for the bridge.</span><span class="zh">真·去信任的 IBC。在 Solana 上完整验证 Dogecoin 共识——桥的核心构建模块。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/city-rollup" target="_blank">
+        <div class="repo-head"><span class="repo-name">city-rollup</span><span class="stars">★ 5</span></div>
+        <p class="repo-desc"><span class="en">A trustless ZK rollup on Dogecoin 🐶 — proof-of-concept for high-throughput execution with Dogecoin as the data availability layer.</span><span class="zh">运行在 Dogecoin 之上的去信任 ZK 卷叠 🐶——以 Dogecoin 作为数据可用性层的高吞吐执行 PoC。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/doge-light-client" target="_blank">
+        <div class="repo-head"><span class="repo-name">doge-light-client</span><span class="stars">★ 7</span></div>
+        <p class="repo-desc"><span class="en">A feature-complete light client for verifying Dogecoin on-chain. Validates headers and proves consensus inside ZK circuits.</span><span class="zh">用于在链上验证 Dogecoin 的全功能轻客户端。验证区块头并在 ZK 电路内证明共识。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/doge-sdk" target="_blank">
+        <div class="repo-head"><span class="repo-name">doge-sdk</span><span class="stars">★ 17</span></div>
+        <p class="repo-desc"><span class="en">🐶 A very lightweight Dogecoin library — just 20kb gzipped, with both Node and browser support. Wow ✨</span><span class="zh">🐶 一个极轻量的 Dogecoin 库——压缩后仅 20KB，同时支持 Node 与浏览器。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-ts"></span>TypeScript</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/electrs-doge" target="_blank">
+        <div class="repo-head"><span class="repo-name">electrs-doge</span><span class="stars">★ 9</span></div>
+        <p class="repo-desc"><span class="en">An efficient re-implementation of Electrum Server in Rust, ported to Dogecoin. Powers the indexer behind the bridge.</span><span class="zh">用 Rust 重写的 Electrum Server 高效实现，移植到 Dogecoin。为桥后端的索引器提供动力。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/txindex" target="_blank">
+        <div class="repo-head"><span class="repo-name">txindex</span><span class="stars">★ 14</span></div>
+        <p class="repo-desc"><span class="en">A reorg-tolerant, modular framework for building ordinals and transaction indexers on Bitcoin and Dogecoin.</span><span class="zh">一个抗重组、模块化的索引框架，适用于在 Bitcoin 与 Dogecoin 上构建 ordinals 与交易索引器。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>PsyProtocol</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · ZK ACCELERATION -->
+<section id="zk">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="num">03 / ZK ACCELERATION</div>
+        <h2><span class="en">ZK Acceleration</span><span class="zh">ZK 加速栈</span></h2>
+        <p class="subtitle"><span class="en">Plonky2 with hardware acceleration, browser proving, recursive verification, and the toolkit that makes proofs fast enough to run anywhere.</span><span class="zh">含硬件加速、浏览器证明与递归验证的 Plonky2 套件——让证明在任何地方都跑得动。</span></p>
+      </div>
+      <div class="count">5 repos</div>
+    </div>
+    <div class="grid">
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky2-hwa" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky2-hwa</span><span class="stars">★ —</span></div>
+        <p class="repo-desc"><span class="en">Plonky2 with modular, pluggable hardware acceleration ⚡. Drop in a GPU/Metal/WebGPU backend without forking the prover.</span><span class="zh">支持模块化、可插拔硬件加速的 Plonky2 ⚡。无需 fork 主仓即可接入 GPU / Metal / WebGPU 后端。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky2-metal-demo" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky2-metal-demo</span><span class="stars">★ 7</span></div>
+        <p class="repo-desc"><span class="en">Speed up Plonky2 / Starky proving by 50% on Apple Silicon Macs using Metal acceleration. Demo + benchmarks.</span><span class="zh">利用 Apple Silicon Mac 的 Metal 加速，将 Plonky2 / Starky 证明速度提升 50%。含演示与基准测试。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-other"></span>Metal</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky2-wasm" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky2-wasm</span><span class="stars">★ 2</span></div>
+        <p class="repo-desc"><span class="en">Plonky2 with WebGPU optimizations for in-browser proving. Generate ZK proofs client-side with no server round-trip.</span><span class="zh">面向浏览器证明的 Plonky2 + WebGPU 优化版。客户端生成 ZK 证明，无需服务端往返。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky2.5" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky2.5</span><span class="stars">★ 19</span></div>
+        <p class="repo-desc"><span class="en">🪩 Verify Plonky3 proofs inside Plonky2. The recursive bridge that lets old verifiers prove new circuits — no migration required.</span><span class="zh">🪩 在 Plonky2 内部验证 Plonky3 证明。让旧验证器继续证明新电路的递归桥，无需迁移。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky2-toolbelt" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky2-toolbelt</span><span class="stars">★ —</span></div>
+        <p class="repo-desc"><span class="en">A grab-bag of useful Plonky2 gadgets and goodies — common circuit components, helpers, and patterns harvested from production work.</span><span class="zh">实用 Plonky2 gadget 与工具集——从生产实践中提炼的常用电路组件、辅助函数与模式。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-other"></span>Mixed</span><span>QEDProtocol</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · CRYPTO -->
+<section id="crypto">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="num">04 / PRIMITIVES</div>
+        <h2><span class="en">Cryptographic Primitives</span><span class="zh">密码学原语</span></h2>
+        <p class="subtitle"><span class="en">Hand-tuned implementations of the hashes, fields, and signatures that ZK systems live or die on. Tiny bundles, browser-friendly, audit-ready.</span><span class="zh">为 ZK 系统精心调校的哈希、域与签名实现。包体极小、浏览器友好、可审计。</span></p>
+      </div>
+      <div class="count">8 repos</div>
+    </div>
+    <div class="grid">
+
+      <a class="repo" href="https://github.com/PsyProtocol/poseidon2" target="_blank">
+        <div class="repo-head"><span class="repo-name">poseidon2</span><span class="stars">★ 9</span></div>
+        <p class="repo-desc"><span class="en">TypeScript implementation of the Poseidon2 hash function — only 3kb 🎉. The standard ZK-friendly hash, now small enough to ship anywhere.</span><span class="zh">Poseidon2 哈希函数的 TypeScript 实现——仅 3KB 🎉。标准 ZK 友好哈希，体积小到可放入任何项目。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-ts"></span>TypeScript</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/poseidon2-webgpu-demo" target="_blank">
+        <div class="repo-head"><span class="repo-name">poseidon2-webgpu-demo</span><span class="stars">★ 6</span></div>
+        <p class="repo-desc"><span class="en">Hashing a Poseidon2 Merkle tree in parallel using a WebGPU compute shader. Live demo of GPU-accelerated ZK hashing in the browser.</span><span class="zh">使用 WebGPU 计算着色器并行哈希 Poseidon2 默克尔树。浏览器内 GPU 加速 ZK 哈希的实时演示。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-ts"></span>TypeScript</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/PsyProtocol/poseidon-goldilocks" target="_blank">
+        <div class="repo-head"><span class="repo-name">poseidon-goldilocks</span><span class="stars">★ 5</span></div>
+        <p class="repo-desc"><span class="en">Poseidon hash for the Goldilocks field with expanded functionality. The exact variant Plonky2 uses internally.</span><span class="zh">面向 Goldilocks 域的 Poseidon 哈希，含扩展功能。Plonky2 内部所用的具体变体。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-ts"></span>TypeScript</span><span>PsyProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/noble-secp256k1" target="_blank">
+        <div class="repo-head"><span class="repo-name">noble-secp256k1</span><span class="stars">★ —</span></div>
+        <p class="repo-desc"><span class="en">Fastest 4KB JS implementation of secp256k1 signatures and ECDH. Bridge-grade, audit-ready elliptic curve crypto.</span><span class="zh">最快的 4KB JavaScript secp256k1 签名与 ECDH 实现。桥接级、可审计的椭圆曲线密码学。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-js"></span>JavaScript</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/succinctx" target="_blank">
+        <div class="repo-head"><span class="repo-name">succinctx</span><span class="stars">★ —</span></div>
+        <p class="repo-desc"><span class="en">The schelling point for ZK applications. Higher-level building blocks for cross-chain, oracle, and bridge circuits.</span><span class="zh">ZK 应用的谢林点。面向跨链、预言机与桥电路的高阶构建模块。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/winterfell" target="_blank">
+        <div class="repo-head"><span class="repo-name">winterfell</span><span class="stars">★ —</span></div>
+        <p class="repo-desc"><span class="en">A STARK prover and verifier for arbitrary computations. Complement to Plonky2 when STARK transparency matters more than proof size.</span><span class="zh">面向任意计算的 STARK 证明器与验证器。当透明性比证明大小更重要时，与 Plonky2 互为补充。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/ark-swiftness" target="_blank">
+        <div class="repo-head"><span class="repo-name">ark-swiftness</span><span class="stars">★ 2</span></div>
+        <p class="repo-desc"><span class="en">Cairo-VM Stark verifier in Arkworks. WIP integration that lets Cairo proofs settle on chains where Arkworks is already deployed.</span><span class="zh">基于 Arkworks 的 Cairo-VM Stark 验证器。开发中，让 Cairo 证明可在已部署 Arkworks 的链上结算。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+
+      <a class="repo" href="https://github.com/QEDProtocol/plonky3-fibonacci" target="_blank">
+        <div class="repo-head"><span class="repo-name">plonky3-fibonacci</span><span class="stars">★ 4</span></div>
+        <p class="repo-desc"><span class="en">A minimal Fibonacci example for the Plonky3 system. The clearest "hello world" for understanding the new prover stack.</span><span class="zh">Plonky3 系统的极简斐波那契示例。理解新证明栈的最佳「Hello World」。</span></p>
+        <div class="repo-meta"><span><span class="lang-dot lang-rust"></span>Rust</span><span>QEDProtocol</span></div>
+      </a>
+    </div>
+
+    <div class="disclaimer">
+      <strong><span class="en">Note</span><span class="zh">说明</span></strong>
+      <span class="en">This page surveys only the public repositories under <a style="color:var(--cyan);text-decoration:none;" href="https://github.com/PsyProtocol">github.com/PsyProtocol</a> and <a style="color:var(--cyan);text-decoration:none;" href="https://github.com/QEDProtocol">github.com/QEDProtocol</a> as of April 2026. Several components — psy-wallet, psy-blockchain-explorer, psy-services, parth-generic — remain private during active development. Star counts and descriptions are pulled directly from GitHub.</span>
+      <span class="zh">本页仅展示截至 2026 年 4 月 <a style="color:var(--cyan);text-decoration:none;" href="https://github.com/PsyProtocol">github.com/PsyProtocol</a> 与 <a style="color:var(--cyan);text-decoration:none;" href="https://github.com/QEDProtocol">github.com/QEDProtocol</a> 之公开仓库。psy-wallet、psy-blockchain-explorer、psy-services、parth-generic 等组件在活跃开发期间保持私有。Star 数与描述直接来自 GitHub。</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <h4><span class="en">About</span><span class="zh">关于</span></h4>
+        <p style="color:var(--fg-2);font-size:13px;line-height:1.6;">
+          <span class="en">An independent guide to the public Psy &amp; QED Protocol open-source stack — assembled by an outside observer. Not an official site. Curated for developers exploring the modern Plonky2 / Dogecoin ZK ecosystem.</span>
+          <span class="zh">独立整理的 Psy 与 QED Protocol 公开开源栈指南——由第三方观察者制作。非官方站点。面向探索现代 Plonky2 / Dogecoin ZK 生态的开发者。</span>
+        </p>
+      </div>
+      <div class="foot-col">
+        <h4><span class="en">Organizations</span><span class="zh">组织</span></h4>
+        <a href="https://github.com/PsyProtocol" target="_blank">github.com/PsyProtocol</a>
+        <a href="https://github.com/QEDProtocol" target="_blank">github.com/QEDProtocol</a>
+      </div>
+      <div class="foot-col">
+        <h4><span class="en">Sections</span><span class="zh">章节</span></h4>
+        <a href="#core"><span class="en">Core Protocol</span><span class="zh">核心协议</span></a>
+        <a href="#cross-chain"><span class="en">Cross-chain</span><span class="zh">跨链</span></a>
+        <a href="#zk"><span class="en">ZK Acceleration</span><span class="zh">ZK 加速</span></a>
+        <a href="#crypto"><span class="en">Crypto Primitives</span><span class="zh">密码学原语</span></a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span><span class="en">Part of the</span><span class="zh">收录于</span> <a href="https://psyverse.fun">Psyverse</a> <span class="en">portfolio</span><span class="zh">作品集</span></span>
+      <span class="en">Compiled April 2026 · Data from GitHub</span>
+      <span class="zh">编纂于 2026 年 4 月 · 数据来源：GitHub</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://analytics-dashboard-two-blue.vercel.app/tracker.js" defer></script>
+</body>
+</html>
