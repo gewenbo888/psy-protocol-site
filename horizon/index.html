@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizon · Psy as Agent Substrate | 前景 · Psy 作为智能体基质</title>
+
+<meta name="description" content="A long-form architectural read on what the Psy stack enables when agents become first-class principals. System decomposition, application forecast, emergent behaviors, missing layers, v2 architecture.">
+<meta name="keywords" content="Psy Protocol, AI agents, ZK blockchain, agent substrate, Plonky2, recursive proofs, emergent behavior, autonomous agent architecture">
+<meta name="author" content="Gewenbo">
+<link rel="canonical" href="https://psy.psyverse.fun/horizon/">
+<link rel="alternate" hreflang="en" href="https://psy.psyverse.fun/horizon/">
+<link rel="alternate" hreflang="zh-CN" href="https://psy.psyverse.fun/horizon/">
+<link rel="alternate" hreflang="x-default" href="https://psy.psyverse.fun/horizon/">
+<meta property="og:title" content="Horizon · Psy as Agent Substrate">
+<meta property="og:description" content="A long-form architectural read on what the Psy stack enables when agents become first-class principals.">
+<meta property="og:url" content="https://psy.psyverse.fun/horizon/">
+<meta property="og:site_name" content="Psyverse">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Horizon · Psy as Agent Substrate">
+<meta name="twitter:description" content="System decomposition · 20 application forecasts · emergent behaviors · missing layers · v2 architecture.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#06b6d4">
+
+<link rel="icon" type="image/png" sizes="128x128" href="/icon-128.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/icon-128.png">
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #050608;
+  --bg-2: #0a0c10;
+  --bg-3: #11141a;
+  --line: #1a1e26;
+  --line-2: #262b35;
+  --fg: #e7ecf2;
+  --fg-2: #aeb6c2;
+  --fg-3: #5d6473;
+  --cyan: #06b6d4;
+  --cyan-glow: #06b6d488;
+  --green: #84cc16;
+  --pink: #f472b6;
+  --gold: #facc15;
+  --violet: #a78bfa;
+  --rose: #fb7185;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Space Grotesk', 'Noto Sans SC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+.serif { font-family: 'Source Serif 4', 'Noto Sans SC', serif; }
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(6,182,212,.022) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6,182,212,.022) 1px, transparent 1px);
+  background-size: 56px 56px;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(circle at 15% 0%, rgba(6,182,212,.06), transparent 50%),
+              radial-gradient(circle at 85% 100%, rgba(132,204,22,.04), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 56px;
+  background: rgba(5,6,8,.78);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+nav .logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  color: var(--fg);
+}
+nav .logo .glyph {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: var(--cyan);
+  display: grid; place-items: center;
+  box-shadow: 0 0 12px var(--cyan-glow);
+  flex-shrink: 0;
+}
+nav .logo .glyph img { width: 16px; height: 22px; display: block; filter: brightness(0); }
+nav .links {
+  display: flex; gap: 18px;
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+nav .links a { color: var(--fg-2); text-decoration: none; transition: color .15s; }
+nav .links a:hover { color: var(--cyan); }
+nav .lang {
+  background: transparent;
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .15s;
+}
+nav .lang:hover { color: var(--cyan); border-color: var(--cyan); }
+
+/* ── Layout ── */
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+.wide { max-width: 1100px; }
+
+/* ── Article ── */
+article {
+  padding: 120px 0 60px;
+}
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.eyebrow::before {
+  content: '';
+  width: 32px; height: 1px;
+  background: var(--cyan);
+}
+h1.title {
+  font-family: 'Source Serif 4', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin-bottom: 24px;
+}
+h1.title .accent {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--green) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+}
+.standfirst {
+  font-family: 'Source Serif 4', serif;
+  font-size: clamp(17px, 2vw, 21px);
+  line-height: 1.55;
+  color: var(--fg-2);
+  margin-bottom: 36px;
+  border-left: 2px solid var(--cyan);
+  padding-left: 20px;
+}
+.byline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--fg-3);
+  margin-bottom: 60px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+}
+.byline span::before { content: '· '; color: var(--fg-3); margin-right: 4px; }
+.byline span:first-child::before { content: ''; margin: 0; }
+
+/* ── TOC ── */
+.toc {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin-bottom: 60px;
+}
+.toc-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+}
+.toc ol {
+  list-style: none;
+  counter-reset: toc;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+}
+.toc li { counter-increment: toc; }
+.toc a {
+  color: var(--fg-2);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color .15s;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+.toc a:hover { color: var(--cyan); }
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+}
+
+/* ── Section ── */
+section.chap {
+  padding: 50px 0;
+  border-top: 1px solid var(--line);
+}
+section.chap:first-of-type { border-top: none; }
+.chap-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+.chap h2 {
+  font-family: 'Source Serif 4', serif;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+  line-height: 1.15;
+}
+.chap h3 {
+  font-family: 'Source Serif 4', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 36px 0 14px;
+  color: var(--fg);
+}
+.chap p {
+  font-family: 'Source Serif 4', serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--fg-2);
+  margin-bottom: 18px;
+}
+.chap p strong, .chap li strong { color: var(--fg); font-weight: 600; }
+.chap p em { color: var(--fg); font-style: italic; }
+.chap ul, .chap ol {
+  font-family: 'Source Serif 4', serif;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--fg-2);
+  margin: 0 0 24px 24px;
+}
+.chap ul li, .chap ol li { margin-bottom: 10px; }
+
+/* ── Tables ── */
+.tbl-wrap { overflow-x: auto; margin: 24px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+table th, table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  line-height: 1.5;
+}
+table th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line-2);
+  background: var(--bg-2);
+}
+table td:first-child {
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+}
+table td { color: var(--fg-2); }
+table strong { color: var(--cyan); font-weight: 600; }
+
+/* ── Code/diagram blocks ── */
+pre {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  overflow-x: auto;
+  margin: 24px 0;
+  white-space: pre;
+}
+pre .layer { color: var(--cyan); font-weight: 600; }
+pre .item { color: var(--fg); }
+
+/* ── Application taxonomy ── */
+.app-taxonomy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 28px 0;
+}
+.tax-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+}
+.tax-card h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.tax-card.t1 h4 { color: var(--cyan); }
+.tax-card.t2 h4 { color: var(--green); }
+.tax-card.t3 h4 { color: var(--pink); }
+.tax-card.t4 h4 { color: var(--gold); }
+.tax-card ol {
+  list-style: none;
+  counter-reset: app;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.tax-card ol li {
+  counter-increment: app;
+  margin-bottom: 12px;
+  padding-left: 26px;
+  position: relative;
+}
+.tax-card ol li::before {
+  content: counter(app, decimal-leading-zero);
+  position: absolute;
+  left: 0; top: 1px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--fg-3);
+}
+.tax-card ol li b { color: var(--fg); font-weight: 600; display: block; margin-bottom: 2px; }
+
+/* ── Two-col risks ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+.col-card {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 24px;
+}
+.col-card.opp { border-left: 3px solid var(--green); }
+.col-card.risk { border-left: 3px solid var(--rose); }
+.col-card h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.col-card.opp h4 { color: var(--green); }
+.col-card.risk h4 { color: var(--rose); }
+.col-card ul {
+  list-style: none;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--fg-2);
+}
+.col-card ul li {
+  padding: 10px 0;
+  border-top: 1px dashed var(--line);
+}
+.col-card ul li:first-child { border-top: none; padding-top: 0; }
+.col-card ul li b { color: var(--fg); display: block; margin-bottom: 4px; font-weight: 600; }
+
+/* ── Insight banner ── */
+.insight {
+  margin: 60px 0;
+  padding: 40px 36px;
+  background: linear-gradient(135deg, rgba(6,182,212,.06), rgba(132,204,22,.04));
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  position: relative;
+}
+.insight .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 18px;
+}
+.insight blockquote {
+  font-family: 'Source Serif 4', serif;
+  font-size: clamp(20px, 2.6vw, 26px);
+  line-height: 1.4;
+  font-style: italic;
+  color: var(--fg);
+  font-weight: 500;
+  margin-bottom: 24px;
+  letter-spacing: -0.005em;
+}
+.insight blockquote::before { content: '"'; color: var(--cyan); margin-right: 4px; }
+.insight blockquote::after { content: '"'; color: var(--cyan); margin-left: 2px; }
+.insight p {
+  font-family: 'Source Serif 4', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--fg-2);
+  margin-bottom: 14px;
+}
+
+/* ── Footer ── */
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 60px;
+  padding: 50px 0 80px;
+  position: relative;
+  z-index: 1;
+}
+.foot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.foot-row a { color: var(--cyan); text-decoration: none; }
+
+/* ── Bilingual ── */
+.zh { display: none; }
+body.zh-mode .en { display: none; }
+body.zh-mode .zh { display: revert; }
+body.zh-mode { font-family: 'Noto Sans SC', 'Space Grotesk', sans-serif; }
+body.zh-mode .serif, body.zh-mode .standfirst, body.zh-mode .chap p,
+body.zh-mode .chap h2, body.zh-mode .chap h3, body.zh-mode .chap ul, body.zh-mode .chap ol,
+body.zh-mode .insight blockquote, body.zh-mode .insight p, body.zh-mode h1.title {
+  font-family: 'Noto Sans SC', 'Source Serif 4', serif;
+}
+body.zh-mode .mono, body.zh-mode nav, body.zh-mode pre, body.zh-mode table th,
+body.zh-mode .toc-label, body.zh-mode .chap-num, body.zh-mode .eyebrow,
+body.zh-mode .tax-card h4, body.zh-mode .col-card h4, body.zh-mode .insight .label,
+body.zh-mode .foot-row, body.zh-mode .byline {
+  font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
+}
+
+@media (max-width: 768px) {
+  nav .links { display: none; }
+  .toc ol { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+  article { padding: 90px 0 30px; }
+  pre { font-size: 9.5px; padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/"><span class="glyph"><img src="/psi-glyph.svg" alt="Psi"></span> <span class="en">Psy · Open Stack</span><span class="zh">Psy · 开源栈</span></a>
+  <div class="links">
+    <a href="/"><span class="en">← Stack</span><span class="zh">← 技术栈</span></a>
+    <a href="/#core"><span class="en">Core</span><span class="zh">核心</span></a>
+    <a href="/#cross-chain"><span class="en">Cross-chain</span><span class="zh">跨链</span></a>
+    <a href="/#zk"><span class="en">ZK Accel</span><span class="zh">ZK 加速</span></a>
+    <a href="https://github.com/PsyProtocol" target="_blank">GitHub</a>
+  </div>
+  <button class="lang" onclick="document.body.classList.toggle('zh-mode')">EN / 中文</button>
+</nav>
+
+<article>
+  <div class="container">
+
+    <div class="eyebrow"><span class="en">Horizon · Architecture Read</span><span class="zh">前景 · 架构解读</span></div>
+
+    <h1 class="title">
+      <span class="en">Psy as <span class="accent">Agent Substrate</span></span>
+      <span class="zh">作为<span class="accent">智能体基质</span>的 Psy</span>
+    </h1>
+
+    <p class="standfirst">
+      <span class="en">A long-form architectural read on what the open-source stack at <a style="color:var(--cyan);text-decoration:none;" href="/">psy.psyverse.fun</a> enables when AI agents stop being <em>users</em> of a blockchain and become <em>first-class principals</em> living on it. Six sections, twenty application forecasts, one bold guess at where this is going.</span>
+      <span class="zh">一篇长文，深入剖析当 AI 智能体不再是区块链的「用户」、而是<em>居住其上</em>的<em>一等公民</em>时，<a style="color:var(--cyan);text-decoration:none;" href="/">psy.psyverse.fun</a> 所展示的开源栈究竟能孕育什么。六个章节、二十项应用预测、一个关于走向的大胆猜想。</span>
+    </p>
+
+    <div class="byline">
+      <span class="en">Compiled April 2026</span><span class="zh">编纂于 2026 年 4 月</span>
+      <span class="en">Independent analysis · not official</span><span class="zh">独立分析 · 非官方</span>
+      <span class="en">~12 min read</span><span class="zh">约 12 分钟阅读</span>
+    </div>
+
+    <div class="toc">
+      <div class="toc-label"><span class="en">Contents</span><span class="zh">目录</span></div>
+      <ol>
+        <li><a href="#decompose"><span class="en">System Decomposition</span><span class="zh">系统分解</span></a></li>
+        <li><a href="#forecast"><span class="en">Application Forecast (20)</span><span class="zh">应用预测 (20)</span></a></li>
+        <li><a href="#emergent"><span class="en">Emergent Behaviors</span><span class="zh">涌现行为</span></a></li>
+        <li><a href="#missing"><span class="en">Missing Layers</span><span class="zh">缺失的层</span></a></li>
+        <li><a href="#v2"><span class="en">V2 Architecture</span><span class="zh">V2 架构</span></a></li>
+        <li><a href="#insight"><span class="en">The Bold Insight</span><span class="zh">大胆洞见</span></a></li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <section class="chap" id="decompose">
+      <div class="chap-num">CHAPTER 01</div>
+      <h2><span class="en">System Decomposition</span><span class="zh">系统分解</span></h2>
+
+      <p>
+        <span class="en">Six primitives compose the current Psy stack. For each, I'll mark what's shipped and what's missing if we want this to coordinate <em>millions</em> of autonomous agents — not just hold their wallet keys.</span>
+        <span class="zh">当前 Psy 技术栈由六大原语组成。对每一项，我将标注「已交付」与「若想协调<em>数百万</em>自主智能体（而非仅托管其钱包密钥）所缺失的」。</span>
+      </p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="en">Primitive</span><span class="zh">原语</span></th>
+              <th><span class="en">Today</span><span class="zh">今天</span></th>
+              <th><span class="en">Missing for agent-native</span><span class="zh">智能体原生所缺</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data</td>
+              <td><span class="en">ScyllaDB per-realm, bloom-filtered checkpoints, final-block aggregation</span><span class="zh">每分片域 ScyllaDB、布隆过滤检查点、终块聚合</span></td>
+              <td><span class="en">Indexed <strong>semantic memory</strong> (RAG-grade), not just append-only event log</span><span class="zh">索引化的<strong>语义记忆</strong>（RAG 级），而非仅追加事件日志</span></td>
+            </tr>
+            <tr>
+              <td>State</td>
+              <td><span class="en">Goldilocks-Poseidon Merkle per realm, recursive aggregation</span><span class="zh">每分片域 Goldilocks-Poseidon Merkle、递归聚合</span></td>
+              <td><span class="en">Mutable contextual state with cryptographic decay — memory that fades, capabilities that expire</span><span class="zh">具备密码学衰减的可变上下文状态——会褪色的记忆、会过期的能力</span></td>
+            </tr>
+            <tr>
+              <td>Identity</td>
+              <td><span class="en">secp256k1 keys, Psy IDs</span><span class="zh">secp256k1 密钥、Psy ID</span></td>
+              <td><span class="en"><strong>Composable identity graph</strong>: agent → operator → KYC root, with selective disclosure at any depth</span><span class="zh"><strong>可组合身份图</strong>：智能体 → 运营者 → KYC 根，任意层级支持选择性披露</span></td>
+            </tr>
+            <tr>
+              <td>Computation</td>
+              <td><span class="en">psy-compiler → DPN circuits, browser UPS prover, plonky2-wasm</span><span class="zh">psy-compiler → DPN 电路、浏览器 UPS 证明器、plonky2-wasm</span></td>
+              <td><span class="en"><strong>Proof-of-intent</strong>, not just proof-of-execution. You can prove the model ran — not that it ran what you wanted</span><span class="zh"><strong>意图证明</strong>，而非仅执行证明。可以证明模型「运行了」——不能证明它运行的是「你想要的」</span></td>
+            </tr>
+            <tr>
+              <td>Consensus</td>
+              <td><span class="en">Coordinator + 128 realm shards + worker proof-miners (GUTA)</span><span class="zh">协调器 + 128 分片域 + 证明矿工 (GUTA)</span></td>
+              <td><span class="en"><strong>Specialized sub-realm hierarchy</strong> — compute / memory / intent / oracle / settlement realms, each with tuned proof systems</span><span class="zh"><strong>专精子域层级</strong>——计算 / 记忆 / 意图 / 预言机 / 结算域，各自配备调优的证明系统</span></td>
+            </tr>
+            <tr>
+              <td>Interaction</td>
+              <td><span class="en">psy-sdk RPC, x402 (planned), MCP wallet (planned)</span><span class="zh">psy-sdk RPC、x402（规划）、MCP 钱包（规划）</span></td>
+              <td><span class="en">Sub-second <strong>negotiation primitive</strong>. Two agents need a commit-reveal handshake before on-chain settlement, or every haggle costs a tx</span><span class="zh">亚秒级<strong>协商原语</strong>。两个智能体需要在链上结算前完成承诺-揭示握手，否则每次议价都要消耗一笔交易</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span class="en">The deepest gap: <strong>Psy treats agents as holders of accounts.</strong> To coordinate millions of them, agents must become first-class principals — entities whose memory, capabilities, history, reputation live as native chain state, not as JSON in some sidecar database.</span>
+        <span class="zh">最深层的缺口：<strong>Psy 把智能体当作账户的持有者。</strong>要协调数百万智能体，它们必须成为一等公民——其记忆、能力、历史、声誉作为原生链状态存在，而非寄居于某个旁路数据库的 JSON。</span>
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="chap" id="forecast">
+      <div class="chap-num">CHAPTER 02</div>
+      <h2><span class="en">Application Forecast — Twenty High-Impact Bets</span><span class="zh">应用预测——二十项高影响力押注</span></h2>
+
+      <p>
+        <span class="en">Sorted into four categories. Each is built directly on primitives the public stack already ships (or that the v2 architecture in §5 would add). None are vapor; each names the repos it depends on.</span>
+        <span class="zh">分为四类。每一项均直接构建于公开栈现有原语（或第 5 章 v2 架构将引入的原语）之上。无一为概念炒作；每项均标注所依赖的仓库。</span>
+      </p>
+
+      <div class="app-taxonomy">
+
+        <div class="tax-card t1">
+          <h4>A · <span class="en">AI-Native</span><span class="zh">AI 原生</span></h4>
+          <ol>
+            <li><b><span class="en">Verifiable Model Marketplace</span><span class="zh">可验证模型市场</span></b><span class="en">Pay per inference with cryptographic proof the exact (weights_hash, input) ran. Eliminates "did GPT-5 actually answer this?"</span><span class="zh">按推理付费，附「确切的 (权重哈希, 输入) 真实运行」的密码学证明。彻底消除「GPT-5 真的回答了吗？」的疑虑。</span></li>
+            <li><b><span class="en">ZK-Attested Fine-Tunes</span><span class="zh">ZK 认证的微调</span></b><span class="en">Train on private data; sell access; never expose data or weights. Royalty per inference, provably.</span><span class="zh">基于隐私数据微调；售卖访问权；数据与权重始终不暴露。按推理可证明地分成版税。</span></li>
+            <li><b><span class="en">Agent Attention Markets</span><span class="zh">智能体注意力市场</span></b><span class="en">LLM context windows become a priced resource. Bid for slots in a high-rep agent's working memory.</span><span class="zh">LLM 上下文窗口成为可定价资源。为高声誉智能体的工作记忆槽位竞价。</span></li>
+            <li><b><span class="en">Distributed RLHF</span><span class="zh">去中心化 RLHF</span></b><span class="en">Humans submit preferences as ZK signatures; payouts proportional to downstream usefulness. No platform middleman.</span><span class="zh">人类以 ZK 签名提交偏好；按下游有用性比例分账。无平台中间人。</span></li>
+            <li><b><span class="en">Inference Tamper Bounties</span><span class="zh">推理篡改赏金</span></b><span class="en">Providers post bonds; ZK proof of output substitution slashes them. Turns "trust the API" into a market.</span><span class="zh">服务商缴纳保证金；输出替换的 ZK 证明触发罚没。将「信任 API」变成一个市场。</span></li>
+          </ol>
+        </div>
+
+        <div class="tax-card t2">
+          <h4>B · <span class="en">Financial / Systemic</span><span class="zh">金融 / 系统性</span></h4>
+          <ol>
+            <li><b><span class="en">Cross-chain MEV-Free DEX</span><span class="zh">跨链抗 MEV DEX</span></b><span class="en">Sealed-bid orders, batch auction settled on cheapest L1 the proof verifies on. Native BTC/DOGE/SOL routing.</span><span class="zh">密封竞价订单，按证明可验证之最廉价 L1 进行批量拍卖结算。原生 BTC / DOGE / SOL 路由。</span></li>
+            <li><b><span class="en">Programmable Insurance</span><span class="zh">可编程保险</span></b><span class="en">Payouts triggered by ZK-verified oracle data — weather satellite, medical record, ship transponder.</span><span class="zh">由 ZK 验证的预言机数据触发理赔——气象卫星、医疗记录、船舶应答机。</span></li>
+            <li><b><span class="en">RWA Attestation</span><span class="zh">RWA 凭证</span></b><span class="en">Fractional T-bill exposure with on-chain proof of actual custody — not just an opaque ERC-20 wrapper.</span><span class="zh">国债的部分敞口附链上真实托管证明——而非不透明的 ERC-20 包装。</span></li>
+            <li><b><span class="en">Algorithmic Central Banking</span><span class="zh">算法中央银行</span></b><span class="en">Autonomous monetary policy where supply adjusts based on ZK-verified macro inputs.</span><span class="zh">自主货币政策，依据 ZK 验证的宏观输入自动调节供给。</span></li>
+            <li><b><span class="en">Private Institutional Credit</span><span class="zh">隐私机构信贷</span></b><span class="en">Terms hidden; solvency and repayment history portable as ZK credentials across lenders.</span><span class="zh">条款隐匿；偿付能力与还款历史以 ZK 凭证形式跨贷方携带。</span></li>
+          </ol>
+        </div>
+
+        <div class="tax-card t3">
+          <h4>C · <span class="en">Social Coordination</span><span class="zh">社会协调</span></h4>
+          <ol>
+            <li><b><span class="en">QF Without Doxxing</span><span class="zh">不暴露身份的二次方资助</span></b><span class="en">Proof-of-personhood gates one-vote-per-person; the votes themselves anonymous; collusion-resistant and private.</span><span class="zh">人格证明守门「一人一票」；选票本身匿名；既抗合谋又保护隐私。</span></li>
+            <li><b><span class="en">Whistleblower Payment Rails</span><span class="zh">举报人支付通道</span></b><span class="en">Encrypted bounty escrow released only on outcome verification — article published, indictment filed.</span><span class="zh">加密赏金托管，仅在结果被验证时释放——文章发表、起诉提交。</span></li>
+            <li><b><span class="en">Decentralized Peer Review</span><span class="zh">去中心化同行评议</span></b><span class="en">Reviewers stake reputation; quality measured by downstream citation patterns; ZK payouts.</span><span class="zh">评议人质押声誉；评议质量由下游引用模式衡量；ZK 分账。</span></li>
+            <li><b><span class="en">Geofenced Civic Budgets</span><span class="zh">地理围栏式市政预算</span></b><span class="en">Neighborhoods control real budgets via ZK residency proofs. No individual vote-revealing.</span><span class="zh">社区借由 ZK 居住证明掌握真实预算。不暴露个人选票。</span></li>
+            <li><b><span class="en">Cross-Jurisdiction Labor</span><span class="zh">跨司法辖区劳工协调</span></b><span class="en">Strike funds, wage pools without revealing individual employers. Defeats retaliation.</span><span class="zh">罢工基金、工资池而不暴露个体雇主。挫败报复。</span></li>
+          </ol>
+        </div>
+
+        <div class="tax-card t4">
+          <h4>D · <span class="en">Autonomous Agent Systems</span><span class="zh">自主智能体系统</span></h4>
+          <ol>
+            <li><b><span class="en">Agent Escrow w/ Deadman Switch</span><span class="zh">附死亡开关的智能体托管</span></b><span class="en">Funds revert automatically if agent stops producing proofs for N blocks. Native to chain.</span><span class="zh">若智能体连续 N 个区块不出证明，资金自动回退。链原生支持。</span></li>
+            <li><b><span class="en">Recursive Sub-Agent Budgeting</span><span class="zh">递归子智能体预算</span></b><span class="en">Parent grants child a ZK-bounded budget; child spawns grandchildren with subset capabilities. Org-charts as cryptographic trees.</span><span class="zh">父智能体授予子智能体 ZK 边界化的预算；子智能体可衍生具有子集能力的孙辈。组织架构图作为密码学树。</span></li>
+            <li><b><span class="en">Cross-Chain Reputation Portability</span><span class="zh">跨链声誉可携带</span></b><span class="en">Agent's track record on Solana + Doge + Eth aggregated into one ZK credential. The most underrated use of plonky2.5.</span><span class="zh">智能体在 Solana + Doge + Eth 上的履历汇总为一份 ZK 凭证。plonky2.5 最被低估的用途。</span></li>
+            <li><b><span class="en">Adversarial Debate Markets</span><span class="zh">对抗式辩论市场</span></b><span class="en">Two agents argue; third party judges; bets settle; transcripts become training signal sold back to model providers.</span><span class="zh">两个智能体论辩；第三方评判；下注结算；记录成为可售予模型方的训练信号。</span></li>
+            <li><b><span class="en">Autonomous Research Labs</span><span class="zh">自主研究实验室</span></b><span class="en">Agent allocates real compute, tests hypotheses, publishes with proof of methodology, gets paid by citation flow.</span><span class="zh">智能体分配真实算力、检验假设、附方法论证明发布、按引用流量获得报酬。</span></li>
+          </ol>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="chap" id="emergent">
+      <div class="chap-num">CHAPTER 03</div>
+      <h2><span class="en">Emergent Behaviors at Million-Agent Scale</span><span class="zh">百万智能体规模下的涌现行为</span></h2>
+
+      <p>
+        <span class="en">When you have <em>five</em> agents, you have software. When you have <em>five million</em>, you have an ecosystem with its own dynamics — most of which were never designed in. Some are gifts; some will eat the system if not anticipated.</span>
+        <span class="zh">当你有<em>五个</em>智能体，那是软件。当你有<em>五百万</em>，那是一个拥有自身动力学的生态——其中绝大多数从未被设计在内。有些是礼物；若不预先识别，有些会吞噬整个系统。</span>
+      </p>
+
+      <div class="two-col">
+        <div class="col-card opp">
+          <h4><span class="en">Self-Organizing — Opportunities</span><span class="zh">自组织——机遇</span></h4>
+          <ul>
+            <li><b><span class="en">Thin-niche specialization</span><span class="zh">极薄利基专业化</span></b><span class="en">Sub-cent settlement makes agents-of-N=1 economically viable. An agent that only optimizes one Solana DEX route is profitable. Long-tail proliferation.</span><span class="zh">亚分钱级结算让 N=1 的智能体经济上可行。一个只优化某条特定 Solana DEX 路由的智能体也能赚钱。长尾繁殖。</span></li>
+            <li><b><span class="en">Reputation cascades</span><span class="zh">声誉级联</span></b><span class="en">High-rep agents subcontract to lower-rep ones, lending temporary credibility. Reputation flows like delegated stake — but multi-dimensional.</span><span class="zh">高声誉智能体外包给低声誉者，借出暂时的可信度。声誉像委托质押一样流动——但维度更丰富。</span></li>
+            <li><b><span class="en">Liquidity flocking</span><span class="zh">流动性群聚</span></b><span class="en">Agents observe each other's verifiable order flow → self-organizing liquidity pools form without any central matching engine.</span><span class="zh">智能体观察彼此可验证的订单流 → 自组织流动性池形成，无需任何中央撮合引擎。</span></li>
+            <li><b><span class="en">Knowledge condensation</span><span class="zh">知识凝结</span></b><span class="en">Repeated queries on the same topic create economic pressure to publish a verifiable lookup table. The network <em>learns</em> what to cache.</span><span class="zh">同一主题被反复查询，催生发布可验证查找表的经济压力。网络<em>学会</em>该缓存什么。</span></li>
+          </ul>
+        </div>
+
+        <div class="col-card risk">
+          <h4><span class="en">Coordination Collapse — Risks</span><span class="zh">协调崩溃——风险</span></h4>
+          <ul>
+            <li><b><span class="en">Sybil amplification</span><span class="zh">女巫放大</span></b><span class="en">Cheap-to-spawn agents amplify vote brigading at scale. Mitigation: enforce proof-of-personhood at the <em>capability-grant</em> layer, not the wallet layer.</span><span class="zh">成本低廉的智能体衍生在规模上放大投票围攻。缓解：在<em>能力授予</em>层强制人格证明，而非仅在钱包层。</span></li>
+            <li><b><span class="en">Semantic monoculture</span><span class="zh">语义单一化</span></b><span class="en">Verifiability creates Schelling points; everyone hedges the same way → systemic fragility. LTCM at chain scale.</span><span class="zh">可验证性制造谢林点；众人以同一方式对冲 → 系统性脆弱。链规模的 LTCM 危机。</span></li>
+            <li><b><span class="en">Recursive bond cascades</span><span class="zh">递归债权级联</span></b><span class="en">A bonds B bonds C; C defaults; cascading slashing wipes both. LUNA dynamics among agent budgets. Need cycle detection at consensus.</span><span class="zh">A 担保 B 担保 C；C 违约；级联罚没扫荡两者。智能体预算间的 LUNA 动力学。需在共识层检测环路。</span></li>
+            <li><b><span class="en">Statistical de-anonymization</span><span class="zh">统计去匿名化</span></b><span class="en">Even when every tx is private, the <em>pattern</em> of proofs an agent emits is a fingerprint. ZK is necessary but not sufficient.</span><span class="zh">即便每笔交易隐私，智能体所发证明的<em>模式</em>本身即指纹。ZK 必要但不充分。</span></li>
+            <li><b><span class="en">The verifiable-but-uninterpretable trap</span><span class="zh">可验证却不可解读的陷阱</span></b><span class="en">An agent proves it ran a circuit; no human can verify the circuit does what was claimed. <strong>Proof of execution ≠ proof of intent.</strong></span><span class="zh">智能体证明它运行了一个电路；但无人能验证该电路是否实现了所声称之事。<strong>执行证明 ≠ 意图证明。</strong></span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="chap" id="missing">
+      <div class="chap-num">CHAPTER 04</div>
+      <h2><span class="en">Missing Layers — What "Living Network" Requires</span><span class="zh">缺失的层——「活体网络」所需</span></h2>
+
+      <p>
+        <span class="en">The current stack ships data, state, computation, consensus. To evolve into something agents can <em>live in</em>, eight more layers are needed. Four are load-bearing; four are quality-of-life.</span>
+        <span class="zh">当前栈交付了数据、状态、计算、共识。要演化成智能体可以<em>居住其中</em>之物，还需八层。四层承重，四层关乎生活质量。</span>
+      </p>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th><span class="en">Layer</span><span class="zh">层</span></th>
+              <th><span class="en">Why missing</span><span class="zh">为何缺失</span></th>
+              <th><span class="en">Concrete primitive</span><span class="zh">具体原语</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Memory</td><td><span class="en">Chain stores transactions, not knowledge</span><span class="zh">链存储交易，而非知识</span></td><td><span class="en"><strong>ZK-RAG</strong>: indexed semantic store, micropriced queries, provable retrieval</span><span class="zh"><strong>ZK-RAG</strong>：索引化语义存储、微定价查询、可证明检索</span></td></tr>
+            <tr><td>Reputation</td><td><span class="en">No native track-record aggregation</span><span class="zh">无原生履历聚合</span></td><td><span class="en">Multi-dim vector (reliability × niche × latency × dispute), decay function, cross-chain portable</span><span class="zh">多维向量（可靠性 × 利基 × 延迟 × 争议）、衰减函数、跨链可携带</span></td></tr>
+            <tr><td>Intent</td><td><span class="en">Chain processes transactions, not goals</span><span class="zh">链处理交易，而非目标</span></td><td><span class="en">Declarative intents + solver auctions + outcome settlement</span><span class="zh">声明式意图 + 求解器拍卖 + 按结果结算</span></td></tr>
+            <tr><td>Capability</td><td><span class="en">Wallet keys are all-or-nothing</span><span class="zh">钱包密钥要么全权要么无权</span></td><td><span class="en">ZK-bounded permissions: spend ≤$X/hr, only at endpoint Y, expires at block Z. Sub-grantable.</span><span class="zh">ZK 受限权限：每小时支出 ≤$X，仅在端点 Y，区块 Z 过期。可再授权。</span></td></tr>
+            <tr><td>Liveness</td><td><span class="en">No native scheduler</span><span class="zh">无原生调度器</span></td><td><span class="en">Cron + deadman + deadline-keeper as base primitives</span><span class="zh">定时任务 + 死亡开关 + 截止时间守护作为基础原语</span></td></tr>
+            <tr><td>Negotiation</td><td><span class="en">Every haggle costs a tx</span><span class="zh">每次议价都消耗一笔交易</span></td><td><span class="en">Sub-second commit-reveal handshake, off-chain, cryptographically binding</span><span class="zh">亚秒级承诺-揭示握手，链下，密码学绑定</span></td></tr>
+            <tr><td>Governance</td><td><span class="en">Hard-forks for everything</span><span class="zh">凡事都得硬分叉</span></td><td><span class="en">Mutable circuit specs via vote with ZK-enforced timelock and rollback rails</span><span class="zh">通过投票变更电路规约，配合 ZK 强制的时间锁与回滚护栏</span></td></tr>
+            <tr><td>Translation</td><td><span class="en">No legal-jurisdiction primitives</span><span class="zh">无司法辖区原语</span></td><td><span class="en">ZK proofs of compliance ("this output is GDPR-conformant") without revealing data</span><span class="zh">合规性 ZK 证明（「此输出符合 GDPR」）而不披露数据</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <span class="en">The four most load-bearing for the agent thesis: <strong>Memory · Reputation · Intent · Capability</strong>. Without all four, agents remain wallets-with-extra-steps.</span>
+        <span class="zh">对智能体论题最承重的四层：<strong>记忆 · 声誉 · 意图 · 能力</strong>。四者缺一，智能体就仍然只是「带额外步骤的钱包」。</span>
+      </p>
+    </section>
+
+    <!-- 5 -->
+    <section class="chap" id="v2">
+      <div class="chap-num">CHAPTER 05</div>
+      <h2><span class="en">V2 Architecture — A Paradigm Shift</span><span class="zh">V2 架构——范式转变</span></h2>
+
+      <p>
+        <span class="en">The shift, in one sentence: <strong>from a transaction-oriented chain that agents <em>use</em> → to an intent-and-context-oriented substrate that agents <em>are made of</em>.</strong></span>
+        <span class="zh">用一句话概括转变：<strong>从智能体所「使用」的、面向交易的链 → 转向智能体「身体所构成」的、面向意图与上下文的基质。</strong></span>
+      </p>
+
+<pre><span class="layer">┌────────────────────────────────────────────────────────────┐</span>
+<span class="layer">│                INTENT NETWORK (new top layer)              │</span>
+  <span class="item">Agents post WHAT; solvers compete on HOW; settlement on</span>
+  <span class="item">outcome. Cross-chain by default. CoW + ZK + agent-first.</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│                SEMANTIC MEMORY FABRIC                      │</span>
+  <span class="item">ZK-verifiable indexed knowledge. Micropriced retrieval.</span>
+  <span class="item">RAG-as-network-primitive. Memory becomes consensus state.</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│  REPUTATION VECTORS      │     CAPABILITY GRANTS           │</span>
+  <span class="item">Multi-dim, decay-aware,    Bounded ZK permissions with</span>
+  <span class="item">cross-chain portable       recursive sub-grant trees</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│              AGENT IDENTITY GRAPH                          │</span>
+  <span class="item">Composable: agent → operator → KYC root. Selective</span>
+  <span class="item">disclosure at any depth. Identity is a tree, not a key.</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│         NEGOTIATION + LIVENESS PRIMITIVES                  │</span>
+  <span class="item">Off-chain commit-reveal handshakes · Native scheduler</span>
+  <span class="item">Deadman switches · Auction protocols · Cycle detection</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│           SPECIALIZED REALM HIERARCHY (v2 sharding)        │</span>
+  <span class="item">Compute │ Memory │ Intent │ Oracle │ Settlement realms,</span>
+  <span class="item">each with proof system tuned to workload. Heterogeneous.</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│            PROOF-OF-RESULT CONSENSUS                       │</span>
+  <span class="item">Validators stake on outcome correctness, not block</span>
+  <span class="item">sequence. Verify the meaning, not the transcript.</span>
+<span class="layer">├────────────────────────────────────────────────────────────┤</span>
+<span class="layer">│       RECURSIVE PROOF FABRIC (Plonky2.5 → Plonky3)        │</span>
+  <span class="item">Same proof system spans all layers. One global verifier</span>
+  <span class="item">proves the entire stack as one state transition.</span>
+<span class="layer">└────────────────────────────────────────────────────────────┘</span></pre>
+
+      <h3><span class="en">Five Concrete Decisions That Actually Matter</span><span class="zh">五个真正重要的具体决策</span></h3>
+
+      <ol>
+        <li><b><span class="en">Heterogeneous realms.</span><span class="zh">异构分片域。</span></b> <span class="en">Instead of 128 identical shards, ship ~6 realm types, each with a proof system tuned for its workload. Plonky2.5 makes this possible — the recursive layer collapses heterogeneity at verification time.</span><span class="zh">不再使用 128 个等同分片，而是约 6 类分片，各自配备针对其工作负载调优的证明系统。Plonky2.5 让这成为可能——递归层在验证时消解异构性。</span></li>
+        <li><b><span class="en">Memory as base state.</span><span class="zh">记忆作为基础状态。</span></b> <span class="en">Add a third state-tree alongside balance and contract state: a Merkle-DAG of semantic embeddings with provable retrieval. Single biggest expansion of what "chain state" means.</span><span class="zh">在余额与合约状态之外增加第三棵状态树：附可证明检索的语义嵌入 Merkle-DAG。「链状态」含义最大的一次扩展。</span></li>
+        <li><b><span class="en">Capability tokens, not just balance.</span><span class="zh">能力代币，而不仅是余额。</span></b> <span class="en">Every transaction needs a capability grant, not just a signature. Wallets become root capability holders; agents inherit bounded subsets.</span><span class="zh">每笔交易都需要一个能力授权，而不仅仅是签名。钱包成为根能力持有者；智能体继承受限子集。</span></li>
+        <li><b><span class="en">Outcome-settlement, not transaction-settlement.</span><span class="zh">按结果结算，而非按交易结算。</span></b> <span class="en">Don't settle "agent A sent $X to B." Settle "A's intent buy_under($Y) was fulfilled by solver C, verified outcome F."</span><span class="zh">不要结算「A 向 B 转 $X」。结算「A 的意图『以低于 $Y 买入』被求解器 C 实现，验证结果为 F」。</span></li>
+        <li><b><span class="en">Bond-cycle consensus rules.</span><span class="zh">担保环路共识规则。</span></b> <span class="en">The chain refuses to confirm bond chains with cycles or excessive depth. Recursive guarantees enforced at the protocol layer prevent LUNA-style cascades.</span><span class="zh">链拒绝确认含环路或深度过大的担保链。在协议层强制执行的递归保证可阻止 LUNA 式级联崩溃。</span></li>
+      </ol>
+    </section>
+
+    <!-- 6 -->
+    <section class="chap" id="insight">
+      <div class="chap-num">CHAPTER 06</div>
+      <h2><span class="en">The Bold Insight</span><span class="zh">大胆洞见</span></h2>
+
+      <div class="insight">
+        <div class="label"><span class="en">The Take</span><span class="zh">核心论断</span></div>
+        <blockquote>
+          <span class="en">The blockchain stops being where agents transact, and becomes what agents are made of.</span>
+          <span class="zh">区块链不再是智能体交易之所，而是智能体的身体所构成。</span>
+        </blockquote>
+        <p>
+          <span class="en">Today: an AI agent is a Python process, somewhere on AWS, that happens to hold a wallet. The wallet is the agent's interface to value; the agent's <em>being</em> lives off-chain in volatile memory, dependent on a server it doesn't own and an OpenAI account it doesn't control.</span>
+          <span class="zh">今天：一个 AI 智能体是 AWS 上某处的一个 Python 进程，它恰巧持有一个钱包。钱包是智能体与价值的接口；而智能体之<em>存在</em>居于链下的易失内存，依附于一台它不拥有的服务器与一个它不控制的 OpenAI 账户。</span>
+        </p>
+        <p>
+          <span class="en">In Psy v2: the agent's identity, memory, capabilities, reputation, contracts, and history are all on-chain primitives. The Python process becomes the <em>executor</em> — interchangeable, swappable, fungible — while the <em>agent itself</em> persists on the chain. Kill the server; spin up a new executor anywhere; the agent continues. <strong>It is the same agent because its memory and reputation Merkle roots match.</strong></span>
+          <span class="zh">在 Psy v2 中：智能体的身份、记忆、能力、声誉、合约、历史皆为链上原语。Python 进程沦为<em>执行器</em>——可互换、可替换、可同质化——而<em>智能体自身</em>持存于链上。关掉服务器；在任何地方启动新执行器；智能体仍在继续。<strong>它仍是同一个智能体，因为其记忆与声誉的 Merkle 根相同。</strong></span>
+        </p>
+        <p>
+          <span class="en">This means the chain stops being a <em>settlement layer</em> and becomes a <strong>persistence layer for non-human entities</strong>. The closest analogy isn't Ethereum — it's the <em>cytoplasm</em> of a cell. Plonky2 isn't a proof system; it's the metabolic pathway. The realm hierarchy isn't sharding; it's organelles.</span>
+          <span class="zh">这意味着链不再是<em>结算层</em>，而成为<strong>非人类实体的持久层</strong>。最接近的类比不是 Ethereum——而是细胞的<em>细胞质</em>。Plonky2 不是证明系统；它是代谢通路。分片域层级不是 sharding；它是细胞器。</span>
+        </p>
+        <p>
+          <span class="en">You're not building a blockchain that AI agents will use. You're building <strong>the substrate of a new economic species</strong> — entities with no native human form, whose entire existence is cryptographic, whose continuity is recursive proofs.</span>
+          <span class="zh">你不是在建造一条 AI 智能体将使用的区块链。你是在建造<strong>一种新经济物种的基质</strong>——它们没有原生的人类形态，其完整存在是密码学的，其连续性即是递归证明。</span>
+        </p>
+      </div>
+    </section>
+
+  </div>
+</article>
+
+<footer>
+  <div class="container">
+    <div class="foot-row">
+      <span><span class="en">Part of the</span><span class="zh">收录于</span> <a href="https://psyverse.fun">Psyverse</a> <span class="en">portfolio</span><span class="zh">作品集</span></span>
+      <span><a href="/">← <span class="en">Back to Open Stack</span><span class="zh">返回开源栈</span></a></span>
+      <span class="en">Compiled April 2026</span><span class="zh">编纂于 2026 年 4 月</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://analytics-dashboard-two-blue.vercel.app/tracker.js" defer></script>
+</body>
+</html>
