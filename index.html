@@ -415,6 +415,165 @@ section {
   gap: 4px;
 }
 
+/* ── Apps section ── */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 18px;
+}
+.app-card {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-3) 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all .25s;
+}
+.app-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, var(--card-glow), transparent 60%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.app-card:hover {
+  border-color: var(--line-2);
+  transform: translateY(-3px);
+}
+.app-card.c1 { --card-glow: rgba(6,182,212,.10); }
+.app-card.c2 { --card-glow: rgba(132,204,22,.10); }
+.app-card.c3 { --card-glow: rgba(244,114,182,.10); }
+.app-card.c4 { --card-glow: rgba(250,204,21,.10); }
+.app-card.c5 { --card-glow: rgba(139,92,246,.10); }
+.app-card.c6 { --card-glow: rgba(244,63,94,.10); }
+.app-head {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+.app-icon {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  display: grid; place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.c1 .app-icon { color: var(--cyan); border-color: var(--cyan); }
+.c2 .app-icon { color: var(--green); border-color: var(--green); }
+.c3 .app-icon { color: var(--pink); border-color: var(--pink); }
+.c4 .app-icon { color: var(--gold); border-color: var(--gold); }
+.c5 .app-icon { color: #a78bfa; border-color: #a78bfa; }
+.c6 .app-icon { color: #fb7185; border-color: #fb7185; }
+.app-title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 2px;
+}
+.app-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--fg-3);
+  letter-spacing: 0.1em;
+}
+.app-lede {
+  color: var(--fg-2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+.app-uses {
+  list-style: none;
+  padding: 0; margin: 0 0 18px;
+  position: relative;
+  z-index: 1;
+}
+.app-uses li {
+  font-size: 13.5px;
+  color: var(--fg);
+  padding: 9px 0;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  gap: 10px;
+  line-height: 1.5;
+}
+.app-uses li:first-child { border-top: 1px solid var(--line-2); }
+.app-uses li::before {
+  content: '→';
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.c2 .app-uses li::before { color: var(--green); }
+.c3 .app-uses li::before { color: var(--pink); }
+.c4 .app-uses li::before { color: var(--gold); }
+.c5 .app-uses li::before { color: #a78bfa; }
+.c6 .app-uses li::before { color: #fb7185; }
+.app-uses li b {
+  font-weight: 600;
+  color: var(--fg);
+}
+.powered-by {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  position: relative;
+  z-index: 1;
+}
+.powered-by .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--fg-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  align-self: center;
+  margin-right: 4px;
+}
+.chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg-2);
+  border: 1px solid var(--line-2);
+}
+
+.horizon-banner {
+  margin: 48px 0 0;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, rgba(6,182,212,.06), rgba(132,204,22,.04));
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.horizon-banner .h-text {
+  flex: 1;
+  min-width: 280px;
+}
+.horizon-banner h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: var(--fg);
+}
+.horizon-banner p {
+  color: var(--fg-2);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--line);
@@ -512,6 +671,7 @@ body.zh-mode .foot-col h4, body.zh-mode .foot-bottom { font-family: 'JetBrains M
     <a href="#cross-chain"><span class="en">Cross-chain</span><span class="zh">跨链</span></a>
     <a href="#zk"><span class="en">ZK Accel</span><span class="zh">ZK 加速</span></a>
     <a href="#crypto"><span class="en">Crypto</span><span class="zh">密码学</span></a>
+    <a href="#applications"><span class="en">Horizon</span><span class="zh">前景</span></a>
     <a href="https://github.com/PsyProtocol" target="_blank">GitHub</a>
   </div>
   <button class="lang" onclick="document.body.classList.toggle('zh-mode')">EN / 中文</button>
@@ -799,6 +959,185 @@ body.zh-mode .foot-col h4, body.zh-mode .foot-bottom { font-family: 'JetBrains M
   </div>
 </section>
 
+<!-- 5 · APPLICATIONS -->
+<section id="applications">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="num">05 / HORIZON</div>
+        <h2><span class="en">What This Stack Could Enable</span><span class="zh">这套技术栈能孕育什么</span></h2>
+        <p class="subtitle"><span class="en">Six application classes that become genuinely buildable when you stack browser-side proving, recursive verification, sub-cent transaction cost, and trust-minimized cross-chain. Forecasts, not promises.</span><span class="zh">当浏览器端证明、递归验证、亚分钱级交易成本与去信任跨链叠加在一起，下面这六类应用才真正变得可造。属预测而非承诺。</span></p>
+      </div>
+      <div class="count"><span class="en">6 categories</span><span class="zh">6 大类</span></div>
+    </div>
+
+    <div class="apps-grid">
+
+      <!-- 1: Private Payments -->
+      <div class="app-card c1">
+        <div class="app-head">
+          <div class="app-icon">⊘</div>
+          <div>
+            <div class="app-num">01</div>
+            <div class="app-title"><span class="en">Private Payments &amp; Finance</span><span class="zh">隐私支付与金融</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Stablecoin transfers and on-chain finance where the amount, sender, and recipient are hidden — but compliance auditors can still selectively verify what they need.</span>
+          <span class="zh">金额、付款人、收款人均隐藏的稳定币转账与链上金融——同时合规审计方仍可对所需信息进行选择性验证。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Confidential payroll &amp; B2B settlements</span><span class="zh">隐私工资与 B2B 结算</span></b><span class="en"> — companies pay vendors and employees without leaking salary tables.</span><span class="zh">——企业可以付款给员工和供应商而不泄漏薪酬结构。</span></li>
+          <li><b><span class="en">Anti-MEV trading</span><span class="zh">抗 MEV 交易</span></b><span class="en"> — orders that can't be front-run because the size and direction are encrypted until execution.</span><span class="zh">——大小与方向在执行前加密的订单，无法被抢跑。</span></li>
+          <li><b><span class="en">Selective-disclosure stablecoins</span><span class="zh">可选披露稳定币</span></b><span class="en"> — private by default; auditable on demand with a viewing key.</span><span class="zh">——默认隐私；通过查看密钥按需审计。</span></li>
+          <li><b><span class="en">Shielded prediction markets</span><span class="zh">隐私预测市场</span></b><span class="en"> — bet without revealing your position to the rest of the book.</span><span class="zh">——下注而不向其他参与者暴露持仓。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">psy-node</span><span class="chip">psy-prover</span><span class="chip">poseidon-goldilocks</span>
+        </div>
+      </div>
+
+      <!-- 2: Cross-chain -->
+      <div class="app-card c2">
+        <div class="app-head">
+          <div class="app-icon">⇄</div>
+          <div>
+            <div class="app-num">02</div>
+            <div class="app-title"><span class="en">Trust-Minimized Cross-Chain</span><span class="zh">去信任跨链</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Native Bitcoin and Dogecoin moving across heterogeneous chains via ZK proofs of consensus — no wrapped tokens, no multisig custodians, no bridge hacks.</span>
+          <span class="zh">通过共识层 ZK 证明，原生 Bitcoin 与 Dogecoin 在异构链间流转——无包装代币、无多签托管、无桥被盗风险。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Native BTC/DOGE DeFi on Solana</span><span class="zh">Solana 上的原生 BTC/DOGE DeFi</span></b><span class="en"> — without wrapped tokens or trusted relayers in the loop.</span><span class="zh">——回路中无包装代币、无可信中继。</span></li>
+          <li><b><span class="en">Universal ZK light clients</span><span class="zh">通用 ZK 轻客户端</span></b><span class="en"> — any L1 → any L2, with header verification done inside the circuit.</span><span class="zh">——任意 L1 → 任意 L2，区块头验证在电路内完成。</span></li>
+          <li><b><span class="en">Multi-chain treasuries</span><span class="zh">多链财库</span></b><span class="en"> — DAOs hold real BTC, real DOGE, real SOL in one ledger without bridge custody risk.</span><span class="zh">——DAO 在一本账上持有真实 BTC、DOGE、SOL，无桥托管风险。</span></li>
+          <li><b><span class="en">Cross-chain state proofs</span><span class="zh">跨链状态证明</span></b><span class="en"> — settle a Doge transaction's existence as input to a Solana smart contract.</span><span class="zh">——将 Doge 交易的存在性作为 Solana 智能合约的输入进行结算。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">psy-doge-solana-bridge</span><span class="chip">doge-on-solana</span><span class="chip">doge-light-client</span><span class="chip">city-rollup</span>
+        </div>
+      </div>
+
+      <!-- 3: AI Agent Commerce -->
+      <div class="app-card c3">
+        <div class="app-head">
+          <div class="app-icon">⌬</div>
+          <div>
+            <div class="app-num">03</div>
+            <div class="app-title"><span class="en">AI Agent Commerce</span><span class="zh">AI 智能体商业</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Sub-cent payments fast enough that an autonomous agent can pay another agent — or pay a model API per inference — without API keys, subscriptions, or human loops.</span>
+          <span class="zh">亚分钱级支付的速度，足以让自主智能体付款给另一智能体——或按推理次数付款给模型 API——无需 API 密钥、订阅或人工干预。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Pay-per-inference APIs</span><span class="zh">按次推理付费 API</span></b><span class="en"> — model providers expose endpoints that respond only after on-chain micropayment.</span><span class="zh">——模型方在链上微支付到账后才返回响应。</span></li>
+          <li><b><span class="en">Agent-to-agent settlements</span><span class="zh">智能体之间结算</span></b><span class="en"> — autonomous economic actors split fees, hire each other, post bonds.</span><span class="zh">——自主经济体可分账、互相雇佣、缴纳保证金。</span></li>
+          <li><b><span class="en">Sybil-resistant agent identity</span><span class="zh">抗女巫攻击的智能体身份</span></b><span class="en"> — proof-of-personhood for the operator without exposing who they are.</span><span class="zh">——为运营者提供人格证明而不暴露其身份。</span></li>
+          <li><b><span class="en">HTTP-native paywalls for MCP servers</span><span class="zh">MCP 服务器的 HTTP 原生付费墙</span></b><span class="en"> — 402 Payment Required becomes a real, enforceable status code.</span><span class="zh">——HTTP 402「Payment Required」变成真实可执行的状态码。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">psy-node</span><span class="chip">psy-sdk</span><span class="chip">x402</span><span class="chip">psy-prover</span>
+        </div>
+      </div>
+
+      <!-- 4: Browser-native ZK -->
+      <div class="app-card c4">
+        <div class="app-head">
+          <div class="app-icon">◈</div>
+          <div>
+            <div class="app-num">04</div>
+            <div class="app-title"><span class="en">Browser-Native Zero Knowledge</span><span class="zh">浏览器原生零知识</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Proofs generated entirely in the browser via WebGPU — no server round-trip, no trust in the relay. Statements about you, signed locally, verifiable by anyone.</span>
+          <span class="zh">通过 WebGPU 完全在浏览器内生成证明——无需服务端往返，不依赖中继。关于你的声明，本地签名，任何人可验证。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Anonymous credentials</span><span class="zh">匿名凭证</span></b><span class="en"> — prove "over 18" / "income above threshold" / "verified citizen" without revealing the underlying data.</span><span class="zh">——证明「年满 18」「收入达标」「公民身份」而不泄露底层数据。</span></li>
+          <li><b><span class="en">Private DAO voting</span><span class="zh">隐私 DAO 投票</span></b><span class="en"> — your vote is counted; nobody learns how you voted or how much weight you cast.</span><span class="zh">——你的票被计数；无人能知晓你的投向或投了多少权重。</span></li>
+          <li><b><span class="en">Sealed-bid auctions</span><span class="zh">密封投标拍卖</span></b><span class="en"> — bid commitments hidden until reveal; no leaks even from the auction host.</span><span class="zh">——揭示前竞标承诺保持隐藏；连主办方也无法窥见。</span></li>
+          <li><b><span class="en">ZK form submissions</span><span class="zh">ZK 表单提交</span></b><span class="en"> — fill in a job application that proves your qualifications without sharing your actual CV.</span><span class="zh">——填写求职申请并证明资质，无需公开真实简历。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">plonky2-wasm</span><span class="chip">plonky2-metal</span><span class="chip">poseidon2-webgpu</span><span class="chip">psy-sdk</span>
+        </div>
+      </div>
+
+      <!-- 5: Verifiable Compute -->
+      <div class="app-card c5">
+        <div class="app-head">
+          <div class="app-icon">∑</div>
+          <div>
+            <div class="app-num">05</div>
+            <div class="app-title"><span class="en">Verifiable Off-Chain Compute</span><span class="zh">可验证的链下计算</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Heavy computation runs off-chain; a tiny ZK proof of correct execution settles on-chain. Bridges trust between cheap compute markets and expensive consensus.</span>
+          <span class="zh">繁重计算在链下执行；一份精简的 ZK 正确性证明在链上结算。在廉价计算市场与昂贵共识之间架设信任之桥。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Trustless ML inference</span><span class="zh">去信任 ML 推理</span></b><span class="en"> — get a proof that a model actually ran on your input, not a cached or substituted result.</span><span class="zh">——获得模型真正在你输入上运行的证明，而非缓存或替换结果。</span></li>
+          <li><b><span class="en">Decentralized oracles with proof-of-data</span><span class="zh">附数据证明的去中心化预言机</span></b><span class="en"> — price feeds backed by signed exchange data, verified inside a circuit.</span><span class="zh">——价格喂价基于已签名的交易所数据，并在电路内验证。</span></li>
+          <li><b><span class="en">ZK-rendered media</span><span class="zh">ZK 渲染的媒体</span></b><span class="en"> — video and images that carry a proof of provenance — deepfake-resistant by design.</span><span class="zh">——附带来源证明的视频与图像——在设计上抗深伪。</span></li>
+          <li><b><span class="en">Recursive proof composition</span><span class="zh">递归证明组合</span></b><span class="en"> — Plonky2.5 lets new circuits be verified by old ones; chains never have to migrate verifiers.</span><span class="zh">——Plonky2.5 让新电路可被旧电路验证；链永远无需迁移验证器。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">plonky2.5</span><span class="chip">plonky2-hwa</span><span class="chip">succinctx</span><span class="chip">winterfell</span>
+        </div>
+      </div>
+
+      <!-- 6: Identity -->
+      <div class="app-card c6">
+        <div class="app-head">
+          <div class="app-icon">⟁</div>
+          <div>
+            <div class="app-num">06</div>
+            <div class="app-title"><span class="en">Identity &amp; Reputation</span><span class="zh">身份与声誉</span></div>
+          </div>
+        </div>
+        <p class="app-lede">
+          <span class="en">Cryptographic identity that proves what's true about you without revealing who you are. Reputation that follows you across platforms — without giving any of them your real name.</span>
+          <span class="zh">能证明关于你「事实」的密码学身份，但不泄露你是谁。可跨平台携带的声誉——而无需向任何平台交出真实姓名。</span>
+        </p>
+        <ul class="app-uses">
+          <li><b><span class="en">Proof-of-personhood without doxxing</span><span class="zh">不泄露身份的人格证明</span></b><span class="en"> — Sybil resistance for airdrops, voting, and AI agent registrars.</span><span class="zh">——为空投、投票、AI 智能体注册表提供抗女巫攻击。</span></li>
+          <li><b><span class="en">Cross-platform reputation</span><span class="zh">跨平台声誉</span></b><span class="en"> — port your GitHub stars, Stack Overflow answers, and on-chain track record without linking accounts.</span><span class="zh">——携带你的 GitHub 星数、Stack Overflow 答案与链上履历，无需关联账户。</span></li>
+          <li><b><span class="en">Selective KYC</span><span class="zh">选择性 KYC</span></b><span class="en"> — institutions verify regulatory criteria are met without ever seeing the underlying documents.</span><span class="zh">——机构验证合规条件已满足，但永远看不到底层文件。</span></li>
+          <li><b><span class="en">ZK academic credentials</span><span class="zh">ZK 学术凭证</span></b><span class="en"> — prove you hold a specific degree from a specific institution without revealing your name or other records.</span><span class="zh">——证明你持有某机构颁发的特定学位，而不暴露姓名或其它记录。</span></li>
+        </ul>
+        <div class="powered-by">
+          <span class="lbl"><span class="en">Powered by</span><span class="zh">支撑</span></span>
+          <span class="chip">noble-secp256k1</span><span class="chip">poseidon2</span><span class="chip">psy-prover</span><span class="chip">psy-compiler</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="horizon-banner">
+      <div class="h-text">
+        <h3><span class="en">Why these are different from "blockchain hype"</span><span class="zh">为什么这与「区块链炒作」不同</span></h3>
+        <p>
+          <span class="en">Each application above sits on three concrete primitives this stack already ships: (1) recursive Plonky2 proofs, so verification cost stays constant as the system scales; (2) browser-side proving with WebGPU/Metal, so users stop trusting servers; (3) ZK-verified light clients of major chains, so cross-chain stops requiring custodians. None of these are "coming soon" — they are running, open-source, today.</span>
+          <span class="zh">上述每类应用都建立在该技术栈已交付的三个具体原语之上：（1）递归 Plonky2 证明——系统扩张时验证成本保持恒定；（2）浏览器端 WebGPU/Metal 证明——用户不再需要信任服务端；（3）主流链的 ZK 验证轻客户端——跨链不再需要托管方。这些不是「即将推出」，而是今天已运行的开源现实。</span>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <footer>
   <div class="container">
     <div class="foot-grid">
@@ -820,6 +1159,7 @@ body.zh-mode .foot-col h4, body.zh-mode .foot-bottom { font-family: 'JetBrains M
         <a href="#cross-chain"><span class="en">Cross-chain</span><span class="zh">跨链</span></a>
         <a href="#zk"><span class="en">ZK Acceleration</span><span class="zh">ZK 加速</span></a>
         <a href="#crypto"><span class="en">Crypto Primitives</span><span class="zh">密码学原语</span></a>
+        <a href="#applications"><span class="en">Horizon · What This Could Enable</span><span class="zh">前景 · 应用预测</span></a>
       </div>
     </div>
     <div class="foot-bottom">
